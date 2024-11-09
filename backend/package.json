@@ -1,0 +1,22 @@
+{
+  "name": "link-shortener-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "predev": "npm run build",
+    "dev": "tsc -w & nodemon dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.9.0",
+    "nodemon": "^3.1.7"
+  }
+}
