@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import urlModel from "./model/url";
+import authRouter from "./route/authRouter";
 
 const app = express();
 const PORT = 8080;
@@ -16,6 +17,8 @@ connectToDB().catch((error) => {
 
 // parsing JSON request body
 app.use(express.json());
+
+app.use("/api/auth", authRouter);
 
 // create short URL
 app.post("/api/short-url", async (req: Request, res: Response) => {
@@ -55,6 +58,11 @@ app.get("/api/long-url/:shortURL", async (req: Request, res: Response) => {
     res.json({ error: "Invalid short URL" });
   }
 });
+
+// TODO: user auth to save shortened URLS to dashboard
+// TODO: redis caching to make retrieval faster
+// TODO: api rate limiter with redis maybe
+// TODO: alias url feature
 
 app.listen(PORT, () => {
   console.log(`Server is running on PORT: ${PORT}`);
