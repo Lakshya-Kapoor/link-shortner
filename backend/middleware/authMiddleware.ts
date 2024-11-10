@@ -6,10 +6,10 @@ export default function verifyToken(
   res: Response,
   next: NextFunction
 ) {
-  const token = req.header("Authorization");
+  const token = req.header("Authorization")?.split(" ")[1];
 
   if (!token) {
-    res.status(401).json({ error: "Access denied" });
+    res.status(401).json({ error: "Authentication token missing" });
   }
 
   try {
