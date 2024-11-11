@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import authRouter from "./route/authRouter";
 import urlRouter from "./route/urlRouter";
+import CustomError from "./utils/CustomErrorClass";
 
 const app = express();
 const PORT = 8080;
@@ -20,6 +21,20 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/url", urlRouter);
+
+app.use(
+  (
+    err: CustomError | Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    if (err instanceof CustomError) {
+      res.status(err.statusCode).json({ message: err.message });
+    }
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+);
 
 // TODO: redis caching to make retrieval faster
 // TODO: api rate limiter with redis maybe
