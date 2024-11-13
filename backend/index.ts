@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import authRouter from "./route/authRouter";
 import urlRouter from "./route/urlRouter";
 import CustomError from "./utils/CustomErrorClass";
+import rateLimiter from "./middleware/rateLimiter";
 
 const app = express();
 const PORT = 8080;
@@ -18,6 +19,7 @@ connectToDB().catch((error) => {
 
 // parsing JSON request body
 app.use(express.json());
+app.use(rateLimiter);
 
 app.use("/api/auth", authRouter);
 app.use("/api/url", urlRouter);
@@ -31,7 +33,9 @@ app.use(
   ) => {
     if (err instanceof CustomError) {
       res.status(err.statusCode).json({ message: err.message });
+      return;
     }
+    console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 );

@@ -1,8 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
 import userModel from "../model/user";
 import urlModel from "../model/url";
-import verifyToken from "../middleware/authMiddleware";
+import verifyToken from "../middleware/verifyToken";
 import CustomError from "../utils/CustomErrorClass";
+import { getFromCache, setInCache } from "../utils/redisConnection";
 
 const router = express.Router();
 
@@ -27,19 +28,21 @@ router.post(
           const newURL = await urlModel.create({
             shortURL: aliasURL,
             originalURL,
+            alias: true,
           });
+
           res.json({ shortURL: aliasURL, urlId: newURL._id });
         }
-      }
-
-      // Checks if shortened URL already exists in the database
-      const urlRes = await urlModel.findOne({ originalURL });
-      if (urlRes) {
-        res.json({ shortURL: urlRes.shortURL, urlId: urlRes._id });
       } else {
-        const shortURL = Date.now().toString();
-        const newURL = await urlModel.create({ shortURL, originalURL });
-        res.json({ shortURL: newURL.shortURL, urlId: newURL._id });
+        // Checks if shortened URL already exists in the database
+        const urlRes = await urlModel.findOne({ originalURL, alias: false });
+        if (urlRes) {
+          res.json({ shortURL: urlRes.shortURL, urlId: urlRes._id });
+        } else {
+          const shortURL = Date.now().toString();
+          const newURL = await urlModel.create({ shortURL, originalURL });
+          res.json({ shortURL: newURL.shortURL, urlId: newURL._id });
+        }
       }
     } catch (error) {
       next(error);
@@ -58,8 +61,16 @@ router.get(
         throw new CustomError("short URL is required", 400);
       }
 
+      const cachedURL = await getFromCache(shortURL);
+      if (cachedURL) {
+        console.log("Retrieved from cache");
+        res.json({ originalURL: cachedURL });
+        return;
+      }
+
       const urlRes = await urlModel.findOne({ shortURL });
       if (urlRes) {
+        await setInCache(shortURL, urlRes.originalURL);
         res.json({ originalURL: urlRes.originalURL });
       } else {
         throw new CustomError("Invalid short URL", 400);

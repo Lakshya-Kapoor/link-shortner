@@ -1,7 +1,8 @@
 import mongoose, { Schema } from "mongoose";
 
 const URLSchema = new Schema({
-  shortURL: { type: String, required: true },
+  alias: { type: Boolean, default: false },
+  shortURL: { type: String, unique: true, required: true },
   originalURL: { type: String, required: true },
 });
 
