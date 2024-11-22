@@ -12,15 +12,15 @@ import Profile from "./pages/Profile";
 // Layouts
 const MainLayout = () => (
   <div className="flex flex-col min-h-screen min-w-full bg-zinc-900">
-    <header className="flex justify-center mt-7">
+    <header className="flex justify-center mt-7 mb-20">
       <h1 className="text-8xl font-bold">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-600 to-violet-600 ">
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
           Linkly
         </span>
       </h1>
     </header>
     <div className="flex-grow flex">
-      <nav className="flex flex-col ml-5 mt-20 gap-10">
+      <nav className="flex flex-col pl-5 gap-10 w-[200px]">
         <NavOption
           to="/"
           icon="/home.svg"
@@ -40,7 +40,9 @@ const MainLayout = () => (
           name="Profile"
         />
       </nav>
-      <Outlet /> {/* Renders nested routes */}
+      <div className="flex-grow pr-[200px]">
+        <Outlet />
+      </div>
     </div>
     <footer>
       <p className="text-center text-white">© 2024 Linkly</p>

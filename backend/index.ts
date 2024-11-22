@@ -4,6 +4,7 @@ import authRouter from "./route/authRouter";
 import urlRouter from "./route/urlRouter";
 import CustomError from "./utils/CustomErrorClass";
 import rateLimiter from "./middleware/rateLimiter";
+import cors from "cors";
 
 const app = express();
 const PORT = 8080;
@@ -18,6 +19,7 @@ connectToDB().catch((error) => {
 });
 
 // parsing JSON request body
+app.use(cors());
 app.use(express.json());
 app.use(rateLimiter);
 
