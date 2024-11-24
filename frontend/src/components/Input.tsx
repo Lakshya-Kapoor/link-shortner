@@ -5,8 +5,10 @@ interface InputProps {
   label: string;
   placeHolder?: string;
   value: string;
+  type?: "text" | "password";
   onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
+  required?: boolean;
 }
 
 function Input({
@@ -14,17 +16,21 @@ function Input({
   label,
   placeHolder,
   value,
+  type = "text",
   onChange,
   disabled = false,
+  required = false,
 }: InputProps) {
   return (
-    <div className="flex flex-col gap-1 items-start">
+    <div className="flex-grow flex flex-col gap-1 items-start">
       <label className="text-lg font-medium hover:cursor-pointer" htmlFor={id}>
         {label}
       </label>
       <input
         id={id}
         value={value}
+        type={type}
+        required={required}
         onChange={onChange}
         placeholder={placeHolder}
         className="outline-none bg-zinc-900  p-3 text-lg text-slate-200 rounded-lg w-full focus:ring-2 focus:ring-purple-500"

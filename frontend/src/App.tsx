@@ -1,67 +1,79 @@
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
-import NavOption from "./components/NavOption";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
 import MyUrl from "./pages/MyUrl";
 import Profile from "./pages/Profile";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import MainLayout from "./layouts/MainLayout";
+import AuthLayout from "./layouts/AuthLayout";
+import AuthProvider from "./contexts/AuthProvider";
+import { useContext } from "react";
+import AuthContext from "./utils/AuthContext";
 
-// Layouts
-const MainLayout = () => (
-  <div className="flex flex-col min-h-screen min-w-full bg-zinc-900">
-    <header className="flex justify-center mt-7 mb-20">
-      <h1 className="text-8xl font-bold">
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-600">
-          Linkly
-        </span>
-      </h1>
-    </header>
-    <div className="flex-grow flex">
-      <nav className="flex flex-col pl-5 gap-10 w-[200px]">
-        <NavOption
-          to="/"
-          icon="/home.svg"
-          activeIcon="/home-active.svg"
-          name="Home"
-        />
-        <NavOption
-          to="/myurls"
-          icon="/url.svg"
-          activeIcon="/url-active.svg"
-          name="My URLs"
-        />
-        <NavOption
-          to="/profile"
-          icon="/profile.svg"
-          activeIcon="/profile-active.svg"
-          name="Profile"
-        />
-      </nav>
-      <div className="flex-grow pr-[200px]">
-        <Outlet />
-      </div>
-    </div>
-    <footer>
-      <p className="text-center text-white">© 2024 Linkly</p>
-    </footer>
-  </div>
-);
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { isLoggedIn } = useContext(AuthContext);
+  if (!isLoggedIn) {
+    return <Navigate to="/login" />;
+  } else {
+    return children;
+  }
+}
+
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const { isLoggedIn } = useContext(AuthContext);
+  if (isLoggedIn) {
+    return <Navigate to="/" />;
+  } else {
+    return children;
+  }
+}
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Main Layout */}
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="myurls" element={<MyUrl />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Main Layout */}
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+            <Route
+              path="myurls"
+              element={
+                <ProtectedRoute>
+                  <MyUrl />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+          <Route path="/" element={<AuthLayout />}>
+            <Route
+              path="login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="signup"
+              element={
+                <PublicRoute>
+                  <Signup />
+                </PublicRoute>
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

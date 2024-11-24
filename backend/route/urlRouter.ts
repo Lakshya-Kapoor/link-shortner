@@ -1,9 +1,10 @@
 import express, { NextFunction, Request, Response } from "express";
-import userModel from "../model/user";
-import urlModel from "../model/url";
+import userModel from "../model/userModel";
+import urlModel from "../model/urlModel";
 import verifyToken from "../middleware/verifyToken";
 import CustomError from "../utils/CustomErrorClass";
 import { getFromCache, setInCache } from "../utils/redisConnection";
+import ShortUniqueId from "short-unique-id";
 
 const router = express.Router();
 
@@ -25,24 +26,16 @@ router.post(
         if (urlRes) {
           throw new CustomError("This alias URL already exists", 400);
         } else {
-          const newURL = await urlModel.create({
-            shortURL: aliasURL,
-            originalURL,
-            alias: true,
-          });
-
-          res.json({ shortURL: aliasURL, urlId: newURL._id });
+          await urlModel.create({ shortURL: aliasURL, originalURL });
+          res.json({ shortURL: aliasURL });
         }
-      } else {
-        // Checks if shortened URL already exists in the database
-        const urlRes = await urlModel.findOne({ originalURL, alias: false });
-        if (urlRes) {
-          res.json({ shortURL: urlRes.shortURL, urlId: urlRes._id });
-        } else {
-          const shortURL = Date.now().toString();
-          const newURL = await urlModel.create({ shortURL, originalURL });
-          res.json({ shortURL: newURL.shortURL, urlId: newURL._id });
-        }
+      }
+      // alias URL not provided
+      else {
+        const uid = new ShortUniqueId({ length: 7 });
+        const shortURL = uid.randomUUID();
+        await urlModel.create({ shortURL, originalURL });
+        res.json({ shortURL });
       }
     } catch (error) {
       next(error);
@@ -104,27 +97,29 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { userId } = req.user;
-      const { urlId } = req.body;
+      const { shortURL } = req.body;
 
-      if (!urlId || urlId.length != 24) {
+      if (!shortURL) {
         throw new CustomError("Invalid URL id", 400);
       }
 
-      const urlRes = await urlModel.findById(urlId);
+      const urlRes = await urlModel.findOne({ shortURL });
       if (!urlRes) {
         throw new CustomError("Invalid URL id", 400);
       }
 
       const matchingURL = await userModel.findOne({
         _id: userId,
-        myURLs: { $elemMatch: { $eq: urlId } },
+        myURLs: { $elemMatch: { $eq: urlRes._id } },
       });
 
       // If the URL is not already saved by the user, save it
       if (matchingURL) {
         res.json({ message: "URL already saved" });
       } else {
-        await userModel.findByIdAndUpdate(userId, { $push: { myURLs: urlId } });
+        await userModel.findByIdAndUpdate(userId, {
+          $push: { myURLs: urlRes._id },
+        });
         res.json({ message: "URL saved successfully" });
       }
     } catch (error) {

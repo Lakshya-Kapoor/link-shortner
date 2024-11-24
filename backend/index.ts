@@ -34,11 +34,11 @@ app.use(
     next: NextFunction
   ) => {
     if (err instanceof CustomError) {
-      res.status(err.statusCode).json({ message: err.message });
+      res.status(err.statusCode).json({ error: err.message });
       return;
     }
     console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 );
 

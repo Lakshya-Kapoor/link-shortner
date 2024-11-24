@@ -2,7 +2,7 @@ import express, { NextFunction } from "express";
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import userModel from "../model/user";
+import userModel from "../model/userModel";
 import CustomError from "../utils/CustomErrorClass";
 
 const router = express.Router();
@@ -12,6 +12,10 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body;
+
+      if (!username || !password) {
+        throw new CustomError("Username and password required", 400);
+      }
 
       const userRes = await userModel.findOne({ username });
       if (userRes) {
@@ -29,7 +33,7 @@ router.post(
 );
 
 router.post(
-  "/signin",
+  "/login",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { username, password } = req.body;
