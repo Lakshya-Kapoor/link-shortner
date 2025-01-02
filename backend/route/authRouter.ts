@@ -48,9 +48,7 @@ router.post(
         throw new CustomError("Invalid password", 400);
       }
 
-      const token = jwt.sign({ userId: userRes!._id }, "my-secret-key", {
-        expiresIn: "1h",
-      });
+      const token = jwt.sign({ userId: userRes!._id }, "my-secret-key");
       res.json({ token });
     } catch (error) {
       next(error);

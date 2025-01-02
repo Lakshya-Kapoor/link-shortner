@@ -18,6 +18,8 @@ function Home() {
   async function handleShortenLink() {
     const url = `http://localhost:8080/api/url/shorten?aliasURL=${aliasLink}`;
 
+    sessionStorage.removeItem("longLink");
+
     const alreadyShortened = localStorage.getItem(longLink + aliasLink);
     if (alreadyShortened) {
       setShortLink(alreadyShortened);
@@ -38,6 +40,31 @@ function Home() {
       } else {
         console.log(error);
       }
+    }
+  }
+
+  async function handleSaveShortLink() {
+    const url = `http://localhost:8080/api/url/save`;
+    const data = { shortURL: shortLink };
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      const responseData = await response.json();
+      if (responseData.error) {
+        throw new Error(responseData.error);
+      } else {
+        alert(responseData.message);
+      }
+    } catch (error) {
+      alert("Failed to save short link");
+      console.error(error);
     }
   }
 
@@ -89,16 +116,24 @@ function Home() {
                 />
               </button>
             </div>
-            <button
-              onClick={() => {
-                setIsShortened(false);
-                setAliasLink("");
-                setLongLink("");
-              }}
-              className="mt-2 flex justify-center items-center bg-purple-600 hover:bg-purple-500 active:bg-purple-700 p-3 rounded-md"
-            >
-              Shorten Another Link
-            </button>
+            <div className="flex gap-5">
+              <button
+                onClick={() => handleSaveShortLink()}
+                className="w-1/2 mt-2 font-medium flex justify-center items-center bg-purple-600 hover:bg-purple-500 active:bg-purple-700 p-3 rounded-md"
+              >
+                Save short link
+              </button>
+              <button
+                onClick={() => {
+                  setIsShortened(false);
+                  setAliasLink("");
+                  setLongLink("");
+                }}
+                className="w-1/2 mt-2 font-medium flex justify-center items-center bg-purple-600 hover:bg-purple-500 active:bg-purple-700 p-3 rounded-md"
+              >
+                Shorten another link
+              </button>
+            </div>
           </>
         ) : (
           <div className="flex items-end gap-4">

@@ -100,7 +100,7 @@ router.post(
       const { shortURL } = req.body;
 
       if (!shortURL) {
-        throw new CustomError("Invalid URL id", 400);
+        throw new CustomError("Provide the short URL to save", 400);
       }
 
       const urlRes = await urlModel.findOne({ shortURL });
