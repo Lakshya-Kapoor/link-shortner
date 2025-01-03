@@ -33,7 +33,7 @@ function MainLayout() {
           {isLoggedIn ? "logout" : "login"}
         </button>
       </header>
-      <div className="flex-grow flex">
+      <div className="flex-grow flex-shrink-0 flex">
         <nav className="flex flex-col pl-5 gap-10 w-[200px]">
           <NavOption
             to="/"
@@ -54,7 +54,7 @@ function MainLayout() {
             name="Profile"
           />
         </nav>
-        <div className="flex-grow pr-[200px]">
+        <div className="flex-grow pr-[200px] ">
           <Outlet />
         </div>
       </div>
