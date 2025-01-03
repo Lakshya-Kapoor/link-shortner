@@ -8,7 +8,7 @@ function MainLayout() {
   const navigate = useNavigate();
 
   function handleLogin() {
-    navigate("/login");
+    navigate("/auth/login");
   }
 
   function handleLogout() {

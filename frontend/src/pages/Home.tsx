@@ -31,7 +31,7 @@ function Home() {
     try {
       const response = await axios.post<{ shortURL: string }>(url, data);
       const shortURL = response.data.shortURL;
-      setShortLink(shortURL);
+      setShortLink("http://localhost:5173/" + shortURL);
       setIsShortened(true);
       localStorage.setItem(longLink + aliasLink, shortURL);
     } catch (error) {

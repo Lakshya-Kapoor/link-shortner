@@ -73,7 +73,7 @@ export default function Login() {
         Don't have an account?{" "}
         <Link
           className="underline text-sky-600 hover:text-sky-500 active:text-sky-700"
-          to={"/signup"}
+          to={"/auth/signup"}
         >
           {" "}
           signup{" "}

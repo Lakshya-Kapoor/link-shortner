@@ -10,21 +10,23 @@ export default function LinkCard({ url }: { url: URL }) {
   const [copied, setCopied] = useState(false);
 
   function copyToClipboard() {
-    navigator.clipboard.writeText("https://linkly/" + url.shortURL).then(() => {
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 800);
-    });
+    navigator.clipboard
+      .writeText("http://localhost:5173/" + url.shortURL)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => {
+          setCopied(false);
+        }, 800);
+      });
   }
 
   return (
-    <div className="text-white p-5 flex flex-col gap-5 w-1/2 bg-neutral-950 rounded-xl">
+    <div className="text-slate-300 p-5 flex flex-col gap-5 w-1/2 bg-slate-300 bg-opacity-5 rounded-xl">
       <div className="flex items-center justify-between">
         <div>
           <span className="text-2xl font-semibold">Short URL: </span>
           <span className="text-2xl font-light text-purple-400">
-            https://linkly/{url.shortURL}
+            http://localhost:5173/{url.shortURL}
           </span>
         </div>
         <div

@@ -33,7 +33,7 @@ export default function Signup() {
         alert(responseData.error);
         throw new Error(responseData.error);
       } else {
-        navigate("/login");
+        navigate("/auth/login");
       }
     } catch (error) {
       console.error(error);
@@ -90,7 +90,7 @@ export default function Signup() {
         Already have an account?{" "}
         <Link
           className="underline text-sky-600 hover:text-sky-500 active:text-sky-700"
-          to={"/login"}
+          to={"/auth/login"}
         >
           login
         </Link>

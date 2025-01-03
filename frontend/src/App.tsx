@@ -9,11 +9,12 @@ import AuthLayout from "./layouts/AuthLayout";
 import AuthProvider from "./contexts/AuthProvider";
 import { useContext } from "react";
 import AuthContext from "./utils/AuthContext";
+import Redirect from "./pages/Redirect";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useContext(AuthContext);
   if (!isLoggedIn) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/auth/login" />;
   } else {
     return children;
   }
@@ -53,7 +54,7 @@ function App() {
               }
             />
           </Route>
-          <Route path="/" element={<AuthLayout />}>
+          <Route path="/auth/" element={<AuthLayout />}>
             <Route
               path="login"
               element={
@@ -71,6 +72,7 @@ function App() {
               }
             />
           </Route>
+          <Route path="*" element={<Redirect />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
